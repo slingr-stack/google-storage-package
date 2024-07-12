@@ -1,102 +1,43 @@
 {
-    "name": "skeleton",
-    "label": "Skeleton Package",
+    "name": "gcs",
+    "label": "Google Cloud Storage",
     "dependencies": [
         {
             "type": "service",
             "name": "http",
             "version": "v1.6.3",
             "instanceId": "shared"
-        },
-        {
-            "type": "package",
-            "name": "oauth",
-            "version": "v1.0.24"
         }
     ],
     "configurationBuilder": "/configurationBuilder.js",
     "configuration": [
         {
-            "name": "SKELETON_API_BASE_URL",
-            "label": "Skeleton Api Url",
-            "type": "label",
-            "value": "https://example.com/"
-        },
-        {
-            "name": "choice",
-            "label": "Choice",
-            "required": false,
-            "defaultValue": "true",
-            "type": "buttonsGroup",
-            "typeOptions": {
-                "allowCustom": true,
-                "possibleValues": [
-                    {
-                        "label": "True",
-                        "name": "true"
-                    },
-                    {
-                        "label": "False",
-                        "name": "false"
-                    },
-                    {
-                        "label": "Other",
-                        "name": "other"
-                    }
-                ]
-            }
-        },
-        {
-            "name": "text",
-            "label": "Text",
+            "name": "serviceAccountEmail",
+            "label": "Service Account Email",
+            "description": "The email used in creating the service account",
             "type": "text",
-            "required": "false",
-            "visibility": "config.choice == 'true'"
+            "required": true
         },
         {
-            "name": "info",
-            "label": "info",
+            "name": "privateKey",
+            "label": "Private Key",
+            "description": "The private key created for the service account",
+            "type": "password",
+            "required": true
+        },
+        {
+            "name": "GOOGLESTORAGE_API_BASE_URL",
+            "label": "Google Storage Api Url",
             "type": "label",
-            "value": "'info'"
+            "value": "https://storage.googleapis.com/storage/v1/"
         }
     ],
-    "events": [
-        {
-            "label": "Webhook",
-            "name": "webhook",
-            "description": "Event triggered when there is a webhook coming from PandaDoc."
-        },
-        {
-            "label": "Callback",
-            "name": "callback",
-            "description": "Happens when a async process is finished"
-        }
-    ],
+    "events": [],
     "metadata": [
         {
             "type": "script",
             "namespace": "api",
             "path": "/scripts/api.js"
-        },
-        {
-            "type": "listener",
-            "namespace": "webhook",
-            "path": "/listeners/webhook.js"
-        },
-        {
-            "type": "flowStep",
-            "namespace": "apiCallSkeleton",
-            "path": "/flowSteps/apiCallSkeleton"
-        },
-        {
-            "type": "flowStep",
-            "namespace": "customFlow",
-            "path": "/flowSteps/customFlow"
-        },
-        {
-            "type": "uiService",
-            "namespace": "testUiService",
-            "path": "/uiServices/testUiService"
         }
     ]
 }

@@ -22,16 +22,6 @@ let httpService = {};
  */
 function handleRequestWithRetry(requestFn, options, callbackData, callbacks) {
     return requestFn(options, callbackData, callbacks);
-    // TODO : If you use oauth uncomment this and delete the previous line, otherwise delete this comment
-    /*
-    try {
-        return requestFn(options, callbackData, callbacks);
-    } catch (error) {
-        sys.logs.info("[skeleton] Handling request...: "+ JSON.stringify(error));
-        dependencies.oauth.functions.refreshToken('skeleton:refreshToken');
-        return requestFn(setAuthorization(options), callbackData, callbacks);
-    }
-    */
 }
 
 function createWrapperFunction(requestFn) {
@@ -42,28 +32,6 @@ function createWrapperFunction(requestFn) {
 
 for (let key in httpDependency) {
     if (typeof httpDependency[key] === 'function') httpService[key] = createWrapperFunction(httpDependency[key]);
-}
-
-// TODO If use oauth you will need the following two functions, otherwise delete them
-
-/**
- * Retrieves the access token.
- *
- * @return {void} The access token refreshed on the storage.
- */
-exports.getAccessToken = function () {
-    sys.logs.info("[skeleton] Getting access token from oauth");
-    return dependencies.oauth.functions.connectUser('skeleton:userConnected');
-}
-
-/**
- * Removes the access token from the oauth.
- *
- * @return {void} The access token removed on the storage.
- */
-exports.removeAccessToken = function () {
-    sys.logs.info("[skeleton] Removing access token from oauth");
-    return dependencies.oauth.functions.disconnectUser('skeleton:disconnectUser');
 }
 
 /****************************************************
@@ -81,7 +49,7 @@ exports.removeAccessToken = function () {
  */
 exports.get = function(path, httpOptions, callbackData, callbacks) {
     let options = checkHttpOptions(path, httpOptions);
-    return httpService.get(Skeleton(options), callbackData, callbacks);
+    return httpService.get(GoogleStorage(options), callbackData, callbacks);
 };
 
 /**
@@ -95,7 +63,7 @@ exports.get = function(path, httpOptions, callbackData, callbacks) {
  */
 exports.post = function(path, httpOptions, callbackData, callbacks) {
     let options = checkHttpOptions(path, httpOptions);
-    return httpService.post(Skeleton(options), callbackData, callbacks);
+    return httpService.post(GoogleStorage(options), callbackData, callbacks);
 };
 
 /**
@@ -109,7 +77,7 @@ exports.post = function(path, httpOptions, callbackData, callbacks) {
  */
 exports.put = function(path, httpOptions, callbackData, callbacks) {
     let options = checkHttpOptions(path, httpOptions);
-    return httpService.put(Skeleton(options), callbackData, callbacks);
+    return httpService.put(GoogleStorage(options), callbackData, callbacks);
 };
 
 /**
@@ -123,7 +91,7 @@ exports.put = function(path, httpOptions, callbackData, callbacks) {
  */
 exports.patch = function(path, httpOptions, callbackData, callbacks) {
     let options = checkHttpOptions(path, httpOptions);
-    return httpService.patch(Skeleton(options), callbackData, callbacks);
+    return httpService.patch(GoogleStorage(options), callbackData, callbacks);
 };
 
 /**
@@ -137,7 +105,7 @@ exports.patch = function(path, httpOptions, callbackData, callbacks) {
  */
 exports.delete = function(path, httpOptions, callbackData, callbacks) {
     let options = checkHttpOptions(path, httpOptions);
-    return httpService.delete(Skeleton(options), callbackData, callbacks);
+    return httpService.delete(GoogleStorage(options), callbackData, callbacks);
 };
 
 /**
@@ -151,7 +119,7 @@ exports.delete = function(path, httpOptions, callbackData, callbacks) {
  */
 exports.head = function(path, httpOptions, callbackData, callbacks) {
     let options = checkHttpOptions(path, httpOptions);
-    return httpService.head(Skeleton(options), callbackData, callbacks);
+    return httpService.head(GoogleStorage(options), callbackData, callbacks);
 };
 
 /**
@@ -165,7 +133,7 @@ exports.head = function(path, httpOptions, callbackData, callbacks) {
  */
 exports.options = function(path, httpOptions, callbackData, callbacks) {
     let options = checkHttpOptions(path, httpOptions);
-    return httpService.options(Skeleton(options), callbackData, callbacks);
+    return httpService.options(GoogleStorage(options), callbackData, callbacks);
 };
 
 exports.utils = {
@@ -202,10 +170,10 @@ exports.utils = {
      */
     getConfiguration: function (property) {
         if (!property) {
-            sys.logs.debug('[skeleton] Get configuration');
+            sys.logs.debug('[GoogleStorage] Get configuration');
             return JSON.stringify(config.get());
         }
-        sys.logs.debug('[skeleton] Get property: '+property);
+        sys.logs.debug('[GoogleStorage] Get property: '+property);
         return config.get(property);
     },
 
@@ -264,21 +232,18 @@ function isObject (obj) {
 let stringType = Function.prototype.call.bind(Object.prototype.toString)
 
 /****************************************************
+ Constants
+ ****************************************************/
+
+ const GOOGLESTORAGE_API_AUTH_URL = 'https://oauth2.googleapis.com/token';
+
+/****************************************************
  Configurator
  ****************************************************/
 
-// TODO This is for the uncommon case that you need to execute something when the app is redeployed or in the first call
-// TODO Remove this variable if you don't need it
-
-let init = true;
-
-// TODO Refactor the Skeleton function to your package name
-
-let Skeleton = function (options) {
-    if (init) { methodOnInit(); init= false; } // TODO Remove this line if you don't use the init variable
+let GoogleStorage = function (options) {
     options = options || {};
     options= setApiUri(options);
-    options= setAuthorization(options);
     options= setRequestHeaders(options);
     return options;
 }
@@ -288,55 +253,73 @@ let Skeleton = function (options) {
  ****************************************************/
 
 function setApiUri(options) {
+    let API_URL = config.get("GOOGLESTORAGE_API_BASE_URL");
     let url = options.path || "";
-    const API_URL = config.get("SKELETON_API_BASE_URL")
     options.url = API_URL + url;
-    sys.logs.debug('[skeleton] Set url: ' + options.path + "->" + options.url);
+    sys.logs.debug('[googlestorage] Set url: ' + options.path + "->" + options.url);
     return options;
 }
 
 function setRequestHeaders(options) {
     let headers = options.headers || {};
-    if (config.get("choice") === "apiKey") { // TODO: Set the authentication method, if needed or remove this if (Remove comments after set the url)
-        sys.logs.debug('[skeleton] Set header apikey');
-        headers = mergeJSON(headers, {"Authorization": "API-Key " + config.get("text")});
-    } 
+
+    sys.logs.debug('[googlestorage] Setting header bearer');
     headers = mergeJSON(headers, {"Content-Type": "application/json"});
+    headers = mergeJSON(headers, {"Authorization": "Bearer "+getAccessTokenForAccount()});
+
+    if (headers.Accept === undefined || headers.Accept === null || headers.Accept === "") {
+        sys.logs.debug('[googlestorage] Set header accept');
+        headers = mergeJSON(headers, {"Accept": "application/json"});
+    }
 
     options.headers = headers;
     return options;
 }
 
-function setAuthorization(options) { // TODO: Set the authorization method and verify prefix, if needed or remove this function (Remove comments after set the url)
-    sys.logs.debug('[skeleton] Setting header token oauth');
-    let authorization = options.authorization || {};
-    authorization = mergeJSON(authorization, {
-        type: "oauth2",
-        accessToken: sys.storage.get(config.get("oauth").id + ' - access_token', {decrypt:true}),
-        headerPrefix: "token"
-    });
-    options.authorization = authorization;
-    return options;
+function getAccessTokenForAccount(account) {
+    account = account || "account";
+    sys.logs.info('[googlestorage] Getting access token for account: '+account);
+    let installationJson = sys.storage.get('installationInfo-GoogleStorage---'+account) || {id: null};
+    let token = installationJson.token || null;
+    let expiration = installationJson.expiration || 0;
+    if (!!token || expiration < new Date()) {
+        sys.logs.info('[googlestorage] Access token is expired or not found. Getting new token');
+        let res = httpService.post(
+            {
+                url: GOOGLESTORAGE_API_AUTH_URL,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: {
+                    grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+                    assertion: getJsonWebToken()
+                }
+            });
+        token = res.access_token;
+        let expires_at = res.expires_in;
+        expiration = new Date(new Date(expires_at) - 1 * 60 * 1000).getTime();
+        installationJson = mergeJSON(installationJson, {"token": token, "expiration": expiration});
+        sys.logs.info('[googlestorage] Saving new token for account: ' + account);
+        sys.storage.replace('installationInfo-GoogleStorage---'+account, installationJson);
+    }
+    return token;
 }
 
-function methodOnInit(){
-    let refreshTokenResponse = httpService.post({
-        url: "https://example.com/",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/x-www-form-urlencoded"
+function getJsonWebToken() {
+    let currentTime = new Date().getTime();
+    let futureTime = currentTime + ( 10 * 60 * 1000);
+    let scopesGlobal = "https://www.googleapis.com/auth/devstorage.read_write";
+    return sys.utils.crypto.jwt.generate(
+        {
+            iss: config.get("serviceAccountEmail"),
+            aud: GOOGLESTORAGE_API_AUTH_URL,
+            scope: scopesGlobal,
+            iat: currentTime,
+            exp: futureTime
         },
-        body: {"grant_type":"refresh_token","refresh_token" : config.get("refreshToken")},
-        authorization: {
-            type: "basic",
-            username: config.get("clientId"),
-            password: config.get("clientSecret")
-        }
-    });
-    sys.logs.debug('[skeleton] Refresh token response: ' + JSON.stringify(refreshTokenResponse));
-    // If you need to set a variable at application level, you can do it with _config.set (on redeploy its cleared)
-    _config.set("accessToken", refreshTokenResponse.access_token);
-    _config.set("refreshToken", refreshTokenResponse.refresh_token);
+        config.get("privateKey"),
+        "RS256"
+    )
 }
 
 function mergeJSON (json1, json2) {
@@ -349,21 +332,4 @@ function mergeJSON (json1, json2) {
         if(json2.hasOwnProperty(key)) result[key] = json2[key];
     }
     return result;
-}
-
-/****************************************************
- Extra helper
- ****************************************************/
-
-exports.callbackTest = function () {
-    log('test function arrived UI');
-    sys.ui.sendMessage({
-        scope: 'uiService:testUiService.testUiService',
-        name: 'callbackTest',
-        callbacks: {
-            callbackTest: function (originalMessage, callbackData) {
-                sys.logs.info('callbackTest');
-            }
-        }
-    });
 }
