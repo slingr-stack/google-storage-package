@@ -38,6 +38,16 @@
             "type": "script",
             "namespace": "api",
             "path": "/scripts/api.js"
+        },
+        {
+            "type": "script",
+            "namespace": "buckets",
+            "path": "/scripts/buckets.js"
+        },
+        {
+            "type": "script",
+            "namespace": "objects",
+            "path": "/scripts/objects.js"
         }
     ]
 }
