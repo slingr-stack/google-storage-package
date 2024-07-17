@@ -261,7 +261,7 @@ function setApiUri(options) {
     }
     let url = options.path || "";
     options.url = API_URL + url;
-    sys.logs.debug('[googlestorage] Set url: ' + options.path + "->" + options.url);
+    sys.logs.info('[googlestorage] Set url: ' + options.path + "->" + options.url);
     return options;
 }
 
