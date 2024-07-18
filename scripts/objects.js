@@ -54,5 +54,8 @@ exports.insert = (bucketName, name, fileId, contentType, metadata, additionalPar
         ]
       }
     }
+    if(additionalParams.debug) {
+        request.isDebug = true;
+    }
     pkg.googlecloudstorage.api.post(`b/${bucketName}/o`, request);
   };

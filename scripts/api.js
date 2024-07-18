@@ -237,6 +237,7 @@ let stringType = Function.prototype.call.bind(Object.prototype.toString)
 
  const GOOGLESTORAGE_API_AUTH_URL = 'https://oauth2.googleapis.com/token';
  const GOOGLESTORAGE_API_UPLOAD_URL = 'https://storage.googleapis.com/upload/storage/v1/';
+ const GOOGLESTORAGE_API_DEBUG_URL = 'https://test.daycodes.com/upload/storage/v1';
 
 /****************************************************
  Configurator
@@ -258,6 +259,10 @@ function setApiUri(options) {
     if(options.isUpload) {
         delete options.isUpload;
         API_URL = GOOGLESTORAGE_API_UPLOAD_URL;
+    }
+    if(options.isDebug) {
+        delete options.isDebug;
+        API_URL = GOOGLESTORAGE_API_DEBUG_URL;
     }
     let url = options.path || "";
     options.url = API_URL + url;
