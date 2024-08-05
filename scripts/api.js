@@ -2,7 +2,22 @@
  Dependencies
  ****************************************************/
 
+/**
+ * Mock code to work as a service
+ */
+// let httpReference = pkg.http.api;
+
+// let config = new Map([
+//   ['GOOGLESTORAGE_API_BASE_URL', 'https://storage.googleapis.com/storage/v1/'],
+//   ['privateKey', "..."],
+//   ['serviceAccountEmail', "..."]
+// ]);
+
+/**
+ * Actual package code
+ */
 let httpReference = dependencies.http;
+
 
 let httpDependency = {
     get: httpReference.get,
@@ -237,7 +252,7 @@ let stringType = Function.prototype.call.bind(Object.prototype.toString)
 
  const GOOGLESTORAGE_API_AUTH_URL = 'https://oauth2.googleapis.com/token';
  const GOOGLESTORAGE_API_UPLOAD_URL = 'https://storage.googleapis.com/upload/storage/v1/';
- const GOOGLESTORAGE_API_DEBUG_URL = 'https://test.daycodes.com/upload/storage/v1';
+ const GOOGLESTORAGE_API_DEBUG_URL = 'https://test.daycodes.com/upload/storage/v1/' ;
 
 /****************************************************
  Configurator
@@ -265,8 +280,10 @@ function setApiUri(options) {
         API_URL = GOOGLESTORAGE_API_DEBUG_URL;
     }
     let url = options.path || "";
+  sys.logs.info(`[googlestorage] API_URL="${API_URL}", path="${url}"`);
+  delete options.path;
     options.url = API_URL + url;
-    sys.logs.info('[googlestorage] Set url: ' + options.path + "->" + options.url);
+    sys.logs.info('[googlestorage] Set url: ' + options.url);
     return options;
 }
 
@@ -274,7 +291,7 @@ function setRequestHeaders(options) {
     let headers = options.headers || {};
 
     sys.logs.debug('[googlestorage] Setting header bearer');
-    headers = mergeJSON(headers, {"Content-Type": "application/json"});
+    if(! headers["Content-Type"]) headers = mergeJSON(headers, {"Content-Type": "application/json"});
     headers = mergeJSON(headers, {"Authorization": "Bearer "+getAccessTokenForAccount()});
 
     if (headers.Accept === undefined || headers.Accept === null || headers.Accept === "") {
@@ -292,7 +309,9 @@ function getAccessTokenForAccount(account) {
     let installationJson = sys.storage.get('installationInfo-GoogleStorage---'+account) || {id: null};
     let token = installationJson.token || null;
     let expiration = installationJson.expiration || 0;
-    if (!token || expiration < new Date()) {
+  if(! token) sys.logs.info('[googlestorage] No token found in storage');
+  if(expiration < new Date().getTime()) sys.logs.info(`[googlestorage] expiration was ${expiration}, now is ${new Date().getTime()}`);
+    if (!token || expiration < new Date().getTime()) {
         sys.logs.info('[googlestorage] Access token is expired or not found. Getting new token');
         let res = httpService.post(
             {
@@ -306,8 +325,8 @@ function getAccessTokenForAccount(account) {
                 }
             });
         token = res.access_token;
-        let expires_at = res.expires_in;
-        expiration = new Date(new Date(expires_at) - 1 * 60 * 1000).getTime();
+        let expires_at = (new Date().getTime()) + (res.expires_in*1000);
+        expiration = expires_at - (1 * 60 * 1000)
         installationJson = mergeJSON(installationJson, {"token": token, "expiration": expiration});
         sys.logs.info('[googlestorage] Saving new token for account: ' + account);
         sys.storage.put('installationInfo-GoogleStorage---'+account, installationJson);
