@@ -1,3 +1,6 @@
+/****************************************************
+ Public API - Generic Functions
+ ****************************************************/
 
 /**
  * Retrieves the details about a specific bucket
@@ -8,5 +11,5 @@
  * @return {object}                 - The response of the request.
  */
 exports.get = (bucketName, optionalParams) => {
-    return pkg.googlecloudstorage.api.get('b/' + bucketName, { params: optionalParams });
+    return pkg.googlecloudstorage.api.get('/b/' + bucketName, { params: optionalParams });
 }
