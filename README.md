@@ -38,9 +38,9 @@ You must format the private key in with characters `\n`!
 **Type**: password (text)  
 **Mandatory**: true
 
-# Javascript api
+# Javascript API
 
-## Http requests
+## HTTP requests
 
 You can make `GET`, `POST`, `PUT`, `PATCH`, and `DELETE` requests to the [Google Cloud Storage API](https://cloud.google.com/storage/docs/json_api) like this:
 
@@ -135,7 +135,7 @@ for more information about generic requests.
 ## Dependencies
 * HTTP Service
 
-## About slingr
+## About Slingr
 
 SLINGR is a low-code rapid application development platform that speeds up development,
 with robust architecture for integrations and executing custom workflows and automation.
