@@ -134,7 +134,6 @@ for more information about generic requests.
 
 ## Dependencies
 * HTTP Service
-* Oauth Package
 
 ## About SLINGR
 
