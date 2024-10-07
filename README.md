@@ -89,7 +89,7 @@ response = pkg.googlecloudstorage.objects.copy('source-bucket', 'source-object',
 log(JSON.stringify(response));
 ```
 
-Delete Object
+### Delete Object
 
 ```javascript
 let response;
