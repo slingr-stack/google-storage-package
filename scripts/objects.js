@@ -1,6 +1,6 @@
-
-// const api = app.gcs.api;
-const api = pkg.googlecloudstorage.api;
+/****************************************************
+ Public API - Generic Functions
+ ****************************************************/
 
 /**
  * Copies a source object to a destination object
@@ -14,7 +14,7 @@ const api = pkg.googlecloudstorage.api;
  * @return {object}                     - The response of the request.
  */
 exports.copy = (sourceBucket, sourceObject, destinationBucket, destinationObject, optionalParams) => {
-  return api.post(`b/${sourceBucket}/o/${sourceObject}/copyTo/b/${destinationBucket}/o/${destinationObject}`, { params: optionalParams});
+  return pkg.googlecloudstorage.api.post(`/b/${sourceBucket}/o/${sourceObject}/copyTo/b/${destinationBucket}/o/${destinationObject}`, { params: optionalParams});
 };
 
 /**
@@ -27,11 +27,11 @@ exports.copy = (sourceBucket, sourceObject, destinationBucket, destinationObject
  * @return {object}                     - The response of the request
  */
 exports.delete = (bucketName, name, optionalParams) => {
-  return api.delete(`b/${bucketName}/o/${name}`, { params: optionalParams });
+  return pkg.googlecloudstorage.api.delete(`/b/${bucketName}/o/${name}`, { params: optionalParams });
 }
 
 /**
- * Retrieves an object's meta data from the bucket. Use getContent to download the actual file
+ * Retrieves an object's metadata from the bucket. Use getContent to download the actual file
  * https://cloud.google.com/storage/docs/json_api/v1/objects/get
  *
  * @param {string} bucketName           - The bucket to retrieve the object from
@@ -42,7 +42,7 @@ exports.delete = (bucketName, name, optionalParams) => {
 exports.get = (bucketName, name, optionalParams) => {
   if(! optionalParams) optionalParams = {};
   optionalParams.alt = 'json';
-  return api.get(`b/${bucketName}/o/${name}`, { params: optionalParams });
+  return pkg.googlecloudstorage.api.get(`/b/${bucketName}/o/${name}`, { params: optionalParams });
 }
 
 /**
@@ -57,11 +57,11 @@ exports.get = (bucketName, name, optionalParams) => {
 exports.getContent = (bucketName, name, optionalParams) => {
   if(! optionalParams) optionalParams = {};
   optionalParams.alt = 'media';
-  return api.get(`b/${bucketName}/o/${name}`, { params: optionalParams, settings: { forceDownload: true, downloadSync: true } });
+  return pkg.googlecloudstorage.api.get(`/b/${bucketName}/o/${name}`, { params: optionalParams, settings: { forceDownload: true, downloadSync: true } });
 } 
 
 /**
- * Writes a file to the google cloud bucket, potentially replacing an existing object
+ * Writes a file to the Google cloud bucket, potentially replacing an existing object
  * https://cloud.google.com/storage/docs/json_api/v1/objects/insert
  *
  * @param {string} bucketName           - The bucket to write the object to
@@ -69,10 +69,9 @@ exports.getContent = (bucketName, name, optionalParams) => {
  * @param {string} fileId               - The slingr file id of the file to insert
  * @param {string} contentType          - The MIME type of the object to insert
  * @param {object} metadata             - key/value pairs of data to keep associated with the object
- * @param {object} additionalParams     - Additional paramaeters to include in the json
  * @return {object}                     - The response of the request.
  */
-exports.insert = (bucketName, name, fileId, contentType, metadata, additionalParams) => {
+exports.insert = (bucketName, name, fileId, contentType, metadata) => {
   let request = {
     isUpload: true,
     url: `b/${bucketName}/o`,
@@ -92,8 +91,7 @@ exports.insert = (bucketName, name, fileId, contentType, metadata, additionalPar
           content: {
             name: name,
             contentType: contentType,
-            metadata: metadata,
-            //               ...additionalParams
+            metadata: metadata
           }
         },
         {
@@ -104,18 +102,15 @@ exports.insert = (bucketName, name, fileId, contentType, metadata, additionalPar
       ]
     }
   }
-  if(additionalParams.debug) {
-    request.isDebug = true;
-  }
-  return api.post(`b/${bucketName}/o`, request);
+  return pkg.googlecloudstorage.api.post(`/b/${bucketName}/o`, request);
 };
 
 /**
- * Lists files in a google cloud bucket
+ * Lists files in a Google cloud bucket
  * https://cloud.google.com/storage/docs/json_api/v1/objects/list
  */
 exports.list = (bucketName, params) => {
-  return api.get(`b/${bucketName}/o`, {
+  return pkg.googlecloudstorage.api.get(`/b/${bucketName}/o`, {
     params: params
   });
 }

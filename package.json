@@ -1,20 +1,19 @@
 {
-    "name": "gcs",
+    "name": "googlecloudstorage",
     "label": "Google Cloud Storage",
     "dependencies": [
         {
             "type": "service",
             "name": "http",
-            "version": "v1.6.3",
+            "version": "v1.7.0",
             "instanceId": "shared"
         }
     ],
-    "configurationBuilder": "/configurationBuilder.js",
     "configuration": [
         {
             "name": "serviceAccountEmail",
             "label": "Service Account Email",
-            "description": "The email used in creating the service account",
+            "description": "The email created for the service account",
             "type": "text",
             "required": true
         },
@@ -26,10 +25,10 @@
             "required": true
         },
         {
-            "name": "GOOGLESTORAGE_API_BASE_URL",
+            "name": "GOOGLE_STORAGE_API_BASE_URL",
             "label": "Google Storage Api Url",
             "type": "label",
-            "value": "https://storage.googleapis.com/storage/v1/"
+            "value": "https://storage.googleapis.com"
         }
     ],
     "events": [],
@@ -48,6 +47,11 @@
             "type": "script",
             "namespace": "objects",
             "path": "/scripts/objects.js"
+        },
+        {
+            "type": "script",
+            "namespace": "utils",
+            "path": "/scripts/utils.js"
         }
     ]
 }
