@@ -21,7 +21,7 @@ Official documentation: [https://cloud.google.com/storage/docs/json_api](https:/
 
 ### Registering New Service Account
 
-To use this package, you must first configure the integration to authenticate with the Google Cloud system using a service account.
+To use this package, you must first configure the integration to authenticate with the Google Cloud system using a service account. (On the [Credentials menu](https://console.cloud.google.com/apis/credentials))
 
 You will need to create a service account in your Google Cloud project and download the private key JSON file, which contains the service account email and private key.
 You must format the private key in with characters `\n`!
