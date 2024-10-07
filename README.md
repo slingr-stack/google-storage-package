@@ -19,32 +19,32 @@ It provides the following features:
 
 Official documentation: [https://cloud.google.com/storage/docs/json_api](https://cloud.google.com/storage/docs/json_api)
 
-### Registering New Service Account
+### Registering new service account
 
 To use this package, you must first configure the integration to authenticate with the Google Cloud system using a service account. (On the [Credentials menu](https://console.cloud.google.com/apis/credentials))
 
 You will need to create a service account in your Google Cloud project and download the private key JSON file, which contains the service account email and private key.
 You must format the private key in with characters `\n`!
 
-#### Service Account Email
+#### Service account email
 
 **Name**: serviceAccountEmail  
 **Type**: text  
 **Mandatory**: true
 
-#### Private Key
+#### Private key
 
 **Name**: privateKey  
 **Type**: password (text)  
 **Mandatory**: true
 
-# Javascript API
+# Javascript api
 
-## HTTP Requests
+## Http requests
 
 You can make `GET`, `POST`, `PUT`, `PATCH`, and `DELETE` requests to the [Google Cloud Storage API](https://cloud.google.com/storage/docs/json_api) like this:
 
-### List Buckets
+### List buckets
 
 ```javascript
 let response;
@@ -52,7 +52,7 @@ response = pkg.googlecloudstorage.api.get('/b');
 log(JSON.stringify(response));
 ```
 
-### Create a Bucket
+### Create a bucket
 
 ```javascript
 let response;
@@ -65,7 +65,7 @@ response = pkg.googlecloudstorage.api.post('/b', {
 log(JSON.stringify(response));
 ```
 
-### Delete a Bucket
+### Delete a bucket
 
 ```javascript
 let response;
@@ -73,7 +73,7 @@ response = pkg.googlecloudstorage.api.delete('/b/my-bucket');
 log(JSON.stringify(response));
 ```
 
-### Get Bucket Details
+### Get bucket details
 
 ```javascript
 let response;
@@ -81,7 +81,7 @@ response = pkg.googlecloudstorage.buckets.get('/b/my-bucket');
 log(JSON.stringify(response));
 ```
 
-### Copy Object
+### Copy object
 
 ```javascript
 let response;
@@ -89,7 +89,7 @@ response = pkg.googlecloudstorage.objects.copy('source-bucket', 'source-object',
 log(JSON.stringify(response));
 ```
 
-### Delete Object
+### Delete object
 
 ```javascript
 let response;
@@ -97,7 +97,7 @@ response = pkg.googlecloudstorage.objects.delete('my-bucket', 'object-name');
 log(JSON.stringify(response));
 ```
 
-### Get Object Metadata
+### Get object metadata
 
 ```javascript
 let response;
@@ -105,7 +105,7 @@ response = pkg.googlecloudstorage.objects.get('my-bucket', 'object-name');
 log(JSON.stringify(response));
 ```
 
-### Get Object Content
+### Get object content
 
 ```javascript
 let response;
@@ -113,7 +113,7 @@ response = pkg.googlecloudstorage.api.getContent('my-bucket', 'object-name');
 log(JSON.stringify(response));
 ```
 
-### Insert Object
+### Insert object
 
 ```javascript
 let response;
@@ -121,7 +121,7 @@ response = pkg.googlecloudstorage.objects.insert('my-bucket', 'object-name', 'fi
 log(JSON.stringify(response));
 ```
 
-### List Objects
+### List objects
 
 ```javascript
 let response;
@@ -135,7 +135,7 @@ for more information about generic requests.
 ## Dependencies
 * HTTP Service
 
-## About SLINGR
+## About slingr
 
 SLINGR is a low-code rapid application development platform that speeds up development,
 with robust architecture for integrations and executing custom workflows and automation.
